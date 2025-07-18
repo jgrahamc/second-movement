@@ -105,8 +105,6 @@ static void _sunrise_sunset_face_update(sunrise_sunset_state_t *state) {
 
         if (result != 0) {
             watch_clear_colon();
-            watch_clear_indicator(WATCH_INDICATOR_PM);
-            watch_clear_indicator(WATCH_INDICATOR_24H);
             if (result == 1) watch_display_text_with_fallback(WATCH_POSITION_TOP_LEFT, "SET", "SE");
             else watch_display_text_with_fallback(WATCH_POSITION_TOP_LEFT, "RIS", "rI");
             sprintf(buf, "%2d", scratch_time.unit.day);
@@ -116,8 +114,6 @@ static void _sunrise_sunset_face_update(sunrise_sunset_state_t *state) {
         }
 
         watch_set_colon();
-        if (movement_clock_mode_24h()) watch_set_indicator(WATCH_INDICATOR_24H);
-
         rise += hours_from_utc;
         set += hours_from_utc;
 
@@ -145,10 +141,6 @@ static void _sunrise_sunset_face_update(sunrise_sunset_state_t *state) {
 
         if (date_time.reg < scratch_time.reg || show_next_match) {
             if (state->rise_index == 0 || show_next_match) {
-                if (!movement_clock_mode_24h()) {
-                    if (watch_utility_convert_to_12_hour(&scratch_time)) watch_set_indicator(WATCH_INDICATOR_PM);
-                    else watch_clear_indicator(WATCH_INDICATOR_PM);
-                }
                 watch_display_text_with_fallback(WATCH_POSITION_TOP_LEFT, "RIS", "rI");
                 sprintf(buf, "%2d", scratch_time.unit.day);
                 watch_display_text(WATCH_POSITION_TOP_RIGHT, buf);
@@ -184,10 +176,6 @@ static void _sunrise_sunset_face_update(sunrise_sunset_state_t *state) {
 
         if (date_time.reg < scratch_time.reg || show_next_match) {
             if (state->rise_index == 0 || show_next_match) {
-                if (!movement_clock_mode_24h()) {
-                    if (watch_utility_convert_to_12_hour(&scratch_time)) watch_set_indicator(WATCH_INDICATOR_PM);
-                    else watch_clear_indicator(WATCH_INDICATOR_PM);
-                }
                 watch_display_text_with_fallback(WATCH_POSITION_TOP_LEFT, "SET", "SE");
                 sprintf(buf, "%2d", scratch_time.unit.day);
                 watch_display_text(WATCH_POSITION_TOP_RIGHT, buf);

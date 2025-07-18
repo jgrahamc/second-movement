@@ -88,7 +88,6 @@ void close_enough_face_activate(void *context) {
     clock_stop_tick_tock_animation();
 
     clock_indicate(WATCH_INDICATOR_BELL, movement_alarm_enabled());
-    clock_indicate(WATCH_INDICATOR_24H, !!movement_clock_mode_24h());
 
     // this ensures that none of the five_minute_periods will match, so we always rerender when the face activates
     state->prev_five_minute_period = -1;
@@ -169,20 +168,6 @@ bool close_enough_face_loop(movement_event_t event, void *context) {
             if (five_minute_period >= hour_switch_index || show_next_hour) {
                 close_enough_hour = (close_enough_hour + 1) % 24;
                 show_next_hour = true;
-            }
-
-            if (movement_clock_mode_24h() != MOVEMENT_CLOCK_MODE_24H) {
-                // if we are at "MM 2 12", don't show the PM indicator
-                if (close_enough_hour < 12 || show_next_hour) {
-                    watch_clear_indicator(WATCH_INDICATOR_PM);
-                } else {
-                    watch_set_indicator(WATCH_INDICATOR_PM);
-                }
-
-                close_enough_hour %= 12;
-                if (close_enough_hour == 0) {
-                    close_enough_hour = 12;
-                }
             }
 
             char first_word[3];

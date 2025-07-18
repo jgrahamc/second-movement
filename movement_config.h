@@ -61,9 +61,6 @@ const watch_face_t watch_faces[] = {
 #define MOVEMENT_DEFAULT_GREEN_COLOR 0xF
 #define MOVEMENT_DEFAULT_BLUE_COLOR 0x0
 
-/* Set to true for 24h mode or false for 12h mode */
-#define MOVEMENT_DEFAULT_24H_MODE false
-
 /* Enable or disable the sound on mode button press */
 #define MOVEMENT_DEFAULT_BUTTON_SOUND true
 

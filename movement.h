@@ -49,13 +49,6 @@ typedef struct {
 //   stuff we'll want to make available to all watch faces and stash in the BKUP[3] register.
 // This allows these preferences to be stored before entering BACKUP mode and and restored after waking from reset.
 
-typedef enum {
-    MOVEMENT_CLOCK_MODE_12H = 0,    /// use 12 hour clock
-    MOVEMENT_CLOCK_MODE_24H,        /// use 24 hour clock
-    MOVEMENT_CLOCK_MODE_024H,       /// use 24 hour clock with leading zero
-    MOVEMENT_NUM_CLOCK_MODES
-} movement_clock_mode_t;
-
 /// struct for Movement LED color
 typedef struct {
     uint8_t red : 4;
@@ -77,14 +70,7 @@ typedef union {
         uint8_t led_blue_color : 4;         // for general purpose illumination, the green LED value (0-15)
         uint8_t time_zone : 6;              // an integer representing an index in the time zone table.
 
-        // while Movement itself doesn't implement a clock or display units, it may make sense to include some
-        // global settings for watch faces to check. The 12/24 hour preference could inform a clock or a
-        // time-oriented complication like a sunrise/sunset timer, and a simple locale preference could tell an
-        // altimeter to display feet or meters as easily as it tells a thermometer to display degrees in F or C.
-        bool clock_mode_24h : 1;            // indicates whether clock should use 12 or 24 hour mode.
-        bool use_imperial_units : 1;        // indicates whether to use metric units (the default) or imperial.
-        
-        bool button_volume : 1;             // 0 for soft beep, 1 for loud beep. If button_should_sound (above) is false, this is ignored.
+      bool button_volume : 1;             // 0 for soft beep, 1 for loud beep. If button_should_sound (above) is false, this is ignored.
     } bit;
     uint32_t reg;
 } movement_settings_t;
@@ -347,12 +333,6 @@ void movement_set_button_should_sound(bool value);
 
 watch_buzzer_volume_t movement_button_volume(void);
 void movement_set_button_volume(watch_buzzer_volume_t value);
-
-movement_clock_mode_t movement_clock_mode_24h(void);
-void movement_set_clock_mode_24h(movement_clock_mode_t value);
-
-bool movement_use_imperial_units(void);
-void movement_set_use_imperial_units(bool value);
 
 uint8_t movement_get_fast_tick_timeout(void);
 void movement_set_fast_tick_timeout(uint8_t value);

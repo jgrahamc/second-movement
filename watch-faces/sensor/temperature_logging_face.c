@@ -38,12 +38,10 @@ static void _temperature_logging_face_log_data(temperature_logging_state_t *logg
     logger_state->data_points++;
 }
 
-static void _temperature_logging_face_update_display(temperature_logging_state_t *logger_state, bool in_fahrenheit, bool clock_mode_24h) {
+static void _temperature_logging_face_update_display(temperature_logging_state_t *logger_state) {
     int8_t pos = (logger_state->data_points - 1 - logger_state->display_index) % TEMPERATURE_LOGGING_NUM_DATA_POINTS;
     char buf[7];
 
-    watch_clear_indicator(WATCH_INDICATOR_24H);
-    watch_clear_indicator(WATCH_INDICATOR_PM);
     watch_clear_colon();
 
     if (pos < 0) {
@@ -56,13 +54,6 @@ static void _temperature_logging_face_update_display(temperature_logging_state_t
         // we are displaying the timestamp in response to a button press
         watch_date_time_t date_time = logger_state->data[pos].timestamp;
         watch_set_colon();
-        if (clock_mode_24h) {
-            watch_set_indicator(WATCH_INDICATOR_24H);
-        } else {
-            if (date_time.unit.hour > 11) watch_set_indicator(WATCH_INDICATOR_PM);
-            date_time.unit.hour %= 12;
-            if (date_time.unit.hour == 0) date_time.unit.hour = 12;
-        }
         watch_display_text(WATCH_POSITION_TOP_LEFT, "AT");
         sprintf(buf, "%2d", date_time.unit.day);
         watch_display_text(WATCH_POSITION_TOP_RIGHT, buf);
@@ -73,11 +64,7 @@ static void _temperature_logging_face_update_display(temperature_logging_state_t
         watch_display_text_with_fallback(WATCH_POSITION_TOP_LEFT, "LOG", "TL");
         sprintf(buf, "%2d", logger_state->display_index);
         watch_display_text(WATCH_POSITION_TOP_RIGHT, buf);
-        if (in_fahrenheit) {
-            watch_display_float_with_best_effort(logger_state->data[pos].temperature_c * 1.8 + 32.0, "#F");
-        } else {
-            watch_display_float_with_best_effort(logger_state->data[pos].temperature_c, "#C");
-        }
+	watch_display_float_with_best_effort(logger_state->data[pos].temperature_c, "#C");
     }
 }
 
@@ -111,7 +98,7 @@ bool temperature_logging_face_loop(movement_event_t event, void *context) {
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
             logger_state->ts_ticks = 2;
-            _temperature_logging_face_update_display(logger_state, movement_use_imperial_units(), movement_clock_mode_24h());
+            _temperature_logging_face_update_display(logger_state);
             break;
         case EVENT_ALARM_BUTTON_DOWN:
             logger_state->display_index = (logger_state->display_index + 1) % TEMPERATURE_LOGGING_NUM_DATA_POINTS;
@@ -122,11 +109,11 @@ bool temperature_logging_face_loop(movement_event_t event, void *context) {
                 movement_move_to_next_face();
                 return false;
             }
-            _temperature_logging_face_update_display(logger_state, movement_use_imperial_units(), movement_clock_mode_24h());
+            _temperature_logging_face_update_display(logger_state);
             break;
         case EVENT_TICK:
             if (logger_state->ts_ticks && --logger_state->ts_ticks == 0) {
-                _temperature_logging_face_update_display(logger_state, movement_use_imperial_units(), movement_clock_mode_24h());
+	      _temperature_logging_face_update_display(logger_state);
             }
             break;
         case EVENT_BACKGROUND_TASK:

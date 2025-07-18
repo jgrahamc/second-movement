@@ -58,19 +58,6 @@ static void clock_indicate_time_signal(clock_state_t *state) {
     clock_indicate(WATCH_INDICATOR_BELL, state->time_signal_enabled);
 }
 
-static void clock_indicate_24h() {
-    clock_indicate(WATCH_INDICATOR_24H, !!movement_clock_mode_24h());
-}
-
-static bool clock_is_pm(watch_date_time_t date_time) {
-    return date_time.unit.hour >= 12;
-}
-
-static void clock_indicate_pm(watch_date_time_t date_time) {
-    if (movement_clock_mode_24h()) { return; }
-    clock_indicate(WATCH_INDICATOR_PM, clock_is_pm(date_time));
-}
-
 static void clock_indicate_low_available_power(clock_state_t *state) {
     // Set the low battery indicator if battery power is low
     if (watch_get_lcd_type() == WATCH_LCD_TYPE_CUSTOM) {
@@ -80,16 +67,6 @@ static void clock_indicate_low_available_power(clock_state_t *state) {
         // LAP indicator on classic LCD is an adequate fallback.
         clock_indicate(WATCH_INDICATOR_LAP, state->battery_low);
     }
-}
-
-static watch_date_time_t clock_24h_to_12h(watch_date_time_t date_time) {
-    date_time.unit.hour %= 12;
-
-    if (date_time.unit.hour == 0) {
-        date_time.unit.hour = 12;
-    }
-
-    return date_time;
 }
 
 static void clock_check_battery_periodically(clock_state_t *state, watch_date_time_t date_time) {
@@ -116,7 +93,7 @@ static void clock_display_all(watch_date_time_t date_time) {
     snprintf(
         buf,
         sizeof(buf),
-        movement_clock_mode_24h() == MOVEMENT_CLOCK_MODE_024H ? "%02d%02d%02d%02d" : "%2d%2d%02d%02d",
+        "%02d%02d%02d%02d",
         date_time.unit.day,
         date_time.unit.hour,
         date_time.unit.minute,
@@ -163,25 +140,17 @@ static bool clock_display_some(watch_date_time_t current, watch_date_time_t prev
 
 static void clock_display_clock(clock_state_t *state, watch_date_time_t current) {
     if (!clock_display_some(current, state->date_time.previous)) {
-        if (movement_clock_mode_24h() == MOVEMENT_CLOCK_MODE_12H) {
-            clock_indicate_pm(current);
-            current = clock_24h_to_12h(current);
-        }
         clock_display_all(current);
     }
 }
 
 static void clock_display_low_energy(watch_date_time_t date_time) {
-    if (movement_clock_mode_24h() == MOVEMENT_CLOCK_MODE_12H) {
-        clock_indicate_pm(date_time);
-        date_time = clock_24h_to_12h(date_time);
-    }
     char buf[8 + 1];
 
     snprintf(
         buf,
         sizeof(buf),
-        movement_clock_mode_24h() == MOVEMENT_CLOCK_MODE_024H ? "%02d%02d%02d  " : "%2d%2d%02d  ",
+        "%02d%02d%02d  ",
         date_time.unit.day,
         date_time.unit.hour,
         date_time.unit.minute
@@ -224,7 +193,6 @@ void clock_face_activate(void *context) {
 
     clock_indicate_time_signal(state);
     clock_indicate_alarm();
-    clock_indicate_24h();
 
     watch_set_colon();
 

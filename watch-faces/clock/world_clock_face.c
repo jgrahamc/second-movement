@@ -166,7 +166,6 @@ static bool world_clock_face_do_display_mode(movement_event_t event, world_clock
     watch_date_time_t date_time;
     switch (event.event_type) {
         case EVENT_ACTIVATE:
-            if (movement_clock_mode_24h()) watch_set_indicator(WATCH_INDICATOR_24H);
             watch_set_colon();
             state->previous_date_time = 0xFFFFFFFF;
             // fall through
@@ -190,16 +189,6 @@ static bool world_clock_face_do_display_mode(movement_event_t event, world_clock
                 }
             } else {
                 // other stuff changed; let's do it all.
-                if (!movement_clock_mode_24h()) {
-                    // if we are in 12 hour mode, do some cleanup.
-                    if (date_time.unit.hour < 12) {
-                        watch_clear_indicator(WATCH_INDICATOR_PM);
-                    } else {
-                        watch_set_indicator(WATCH_INDICATOR_PM);
-                    }
-                    date_time.unit.hour %= 12;
-                    if (date_time.unit.hour == 0) date_time.unit.hour = 12;
-                }
                 watch_display_character(state->settings.bit.char_0, 0);
                 watch_display_character(state->settings.bit.char_1, 1);
                 if (watch_get_lcd_type() == WATCH_LCD_TYPE_CUSTOM) {

@@ -51,11 +51,6 @@ static void ish_face_update_display(ish_face_state_t *state, watch_date_time_t d
     char buf[8];
     uint8_t hour = date_time.unit.hour;
     uint8_t minute = date_time.unit.minute;
-    // Support 12/24h mode
-    if (movement_clock_mode_24h() == MOVEMENT_CLOCK_MODE_12H) {
-        hour = hour % 12;
-        if (hour == 0) hour = 12;
-    }
     // Compute vague time string based on the current vagueness level
     switch (state->vagueness_level) {
         case 1: { // Level 1: Hour, switch at 30 minute mark

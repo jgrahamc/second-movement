@@ -441,22 +441,6 @@ void movement_set_button_volume(watch_buzzer_volume_t value) {
     movement_state.settings.bit.button_volume = value;
 }
 
-movement_clock_mode_t movement_clock_mode_24h(void) {
-    return movement_state.settings.bit.clock_mode_24h ? MOVEMENT_CLOCK_MODE_24H : MOVEMENT_CLOCK_MODE_12H;
-}
-
-void movement_set_clock_mode_24h(movement_clock_mode_t value) {
-    movement_state.settings.bit.clock_mode_24h = (value == MOVEMENT_CLOCK_MODE_24H);
-}
-
-bool movement_use_imperial_units(void) {
-    return movement_state.settings.bit.use_imperial_units;
-}
-
-void movement_set_use_imperial_units(bool value) {
-    movement_state.settings.bit.use_imperial_units = value;
-}
-
 uint8_t movement_get_fast_tick_timeout(void) {
     return movement_state.settings.bit.to_interval;
 }
@@ -631,7 +615,6 @@ void app_init(void) {
     } else {
         // Otherwise set default values.
         movement_state.settings.bit.version = 0;
-        movement_state.settings.bit.clock_mode_24h = MOVEMENT_DEFAULT_24H_MODE;
         movement_state.settings.bit.time_zone = UTZ_UTC;
         movement_state.settings.bit.led_red_color = MOVEMENT_DEFAULT_RED_COLOR;
         movement_state.settings.bit.led_green_color = MOVEMENT_DEFAULT_GREEN_COLOR;

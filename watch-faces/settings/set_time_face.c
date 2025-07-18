@@ -145,19 +145,10 @@ bool set_time_face_loop(movement_event_t event, void *context) {
         }
     } else if (current_page < 3) {
         watch_clear_colon();
-        watch_clear_indicator(WATCH_INDICATOR_24H);
-        watch_clear_indicator(WATCH_INDICATOR_PM);
         sprintf(buf, "%2d%02d%02d", date_time.unit.year + 20, date_time.unit.month, date_time.unit.day);
     } else {
         watch_set_colon();
-        if (movement_clock_mode_24h()) {
-            watch_set_indicator(WATCH_INDICATOR_24H);
-            sprintf(buf, "%2d%02d%02d", date_time.unit.hour, date_time.unit.minute, date_time.unit.second);
-        } else {
-            sprintf(buf, "%2d%02d%02d", (date_time.unit.hour % 12) ? (date_time.unit.hour % 12) : 12, date_time.unit.minute, date_time.unit.second);
-            if (date_time.unit.hour < 12) watch_clear_indicator(WATCH_INDICATOR_PM);
-            else watch_set_indicator(WATCH_INDICATOR_PM);
-        }
+	sprintf(buf, "%02d%02d%02d", date_time.unit.hour, date_time.unit.minute, date_time.unit.second);
     }
 
     watch_display_text(WATCH_POSITION_BOTTOM, buf);

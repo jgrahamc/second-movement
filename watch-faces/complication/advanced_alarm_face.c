@@ -69,7 +69,6 @@ static void _alarm_set_signal(alarm_state_t *state) {
 
 static void _advanced_alarm_face_draw(alarm_state_t *state, uint8_t subsecond) {
     char buf[12];
-    bool set_leading_zero = movement_clock_mode_24h() == MOVEMENT_CLOCK_MODE_024H;
 
     uint8_t i = 0;
     if (state->is_setting) {
@@ -78,19 +77,8 @@ static void _advanced_alarm_face_draw(alarm_state_t *state, uint8_t subsecond) {
     }
     //handle am/pm for hour display
     uint8_t h = state->alarm[state->alarm_idx].hour;
-    if (!movement_clock_mode_24h()) {
-        if (h >= 12) {
-            watch_set_indicator(WATCH_INDICATOR_PM);
-            h %= 12;
-        } else {
-            watch_clear_indicator(WATCH_INDICATOR_PM);
-        }
-        if (h == 0) h = 12;
-    } else {
-        watch_set_indicator(WATCH_INDICATOR_24H);
-    }
 
-    sprintf(buf, set_leading_zero? "%c%c%2d%02d%02d  " : "%c%c%2d%2d%02d  ",
+    sprintf(buf, "%c%c%2d%02d%02d  ",
         _dow_strings[i][0], _dow_strings[i][1],
         (state->alarm_idx + 1),
         h,

@@ -29,13 +29,9 @@
 
 static bool skip = false;
 
-static void _temperature_display_face_update_display(bool in_fahrenheit) {
+static void _temperature_display_face_update_display() {
     float temperature_c = movement_get_temperature();
-    if (in_fahrenheit) {
-        watch_display_float_with_best_effort(temperature_c * 1.8 + 32.0, "#F");
-    } else {
-        watch_display_float_with_best_effort(temperature_c, "#C");
-    }
+    watch_display_float_with_best_effort(temperature_c, "#C");
 }
 
 void temperature_display_face_setup(uint8_t watch_face_index, void ** context_ptr) {
@@ -54,8 +50,7 @@ bool temperature_display_face_loop(movement_event_t event, void *context) {
     watch_date_time_t date_time = watch_rtc_get_date_time();
     switch (event.event_type) {
         case EVENT_ALARM_LONG_PRESS:
-            movement_set_use_imperial_units(!movement_use_imperial_units());
-            _temperature_display_face_update_display(movement_use_imperial_units());
+            _temperature_display_face_update_display();
             break;
         case EVENT_ACTIVATE:
             if (skip) {
@@ -74,7 +69,7 @@ bool temperature_display_face_loop(movement_event_t event, void *context) {
                 // In reality the measurement takes a fraction of a second, but this is just to show something is happening.
                 watch_set_indicator(WATCH_INDICATOR_SIGNAL);
             } else if (date_time.unit.second % 5 == 0) {
-                _temperature_display_face_update_display(movement_use_imperial_units());
+                _temperature_display_face_update_display();
                 watch_clear_indicator(WATCH_INDICATOR_SIGNAL);
             }
             break;
@@ -86,7 +81,7 @@ bool temperature_display_face_loop(movement_event_t event, void *context) {
             // update every 5 minutes
             if (date_time.unit.minute % 5 == 0) {
                 watch_clear_indicator(WATCH_INDICATOR_SIGNAL);
-                _temperature_display_face_update_display(movement_use_imperial_units());
+                _temperature_display_face_update_display();
             }
             break;
         default:
